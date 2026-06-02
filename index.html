@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kx Software — Android Gaming Controller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   CONFIG — cambia solo este bloque
+═══════════════════════════════════════════ */
+:root {
+  --DOWNLOAD_URL: "https://www.mediafire.com/file/tu-link-aqui";
+}
+
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #020305;
+  --bg1:       #030508;
+  --bg2:       #060810;
+  --bg3:       #0a0d18;
+  --surface:   #0d1120;
+  --surface2:  #111828;
+  --border:    #151d30;
+  --border2:   #1c2640;
+  --border3:   #243050;
+
+  --blue:      #3d7fff;
+  --blue2:     #5b6bff;
+  --cyan:      #00c8ff;
+  --gold:      #f5c232;
+  --gold2:     #ffaa00;
+  --green:     #00e87a;
+  --red:       #ff3d5a;
+
+  --text:      #e4ecff;
+  --text2:     #7a8baa;
+  --text3:     #3a4a68;
+  --text4:     #1e2840;
+
+  --glow-b:    rgba(61,127,255,0.18);
+  --glow-g:    rgba(245,194,50,0.14);
+  --glow-c:    rgba(0,200,255,0.12);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ─── CUSTOM CURSOR ─── */
+#cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--blue);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .15s, height .15s, background .15s, opacity .15s;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(61,127,255,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform .08s linear, width .2s, height .2s, border-color .2s;
+}
+body:hover #cursor { opacity: 1; }
+
+/* ─── GLOBAL NOISE ─── */
+body::after {
+  content:'';
+  position:fixed;inset:0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9990;
+}
+
+/* ─── SCANLINES ─── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+  pointer-events:none;
+  z-index: 9989;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:500;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 60px;
+  height: 64px;
+  background: rgba(2,3,5,0.7);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border-bottom: 1px solid rgba(61,127,255,0.08);
+  transition: border-color .4s;
+}
+nav.scrolled { border-bottom-color: rgba(61,127,255,0.18); }
+
+.nav-logo {
+  display:flex; align-items:center; gap:12px;
+  text-decoration:none;
+}
+.nav-logo img { width:32px; height:32px; object-fit:contain; }
+.nav-logo-txt {
+  font-family:'Orbitron',sans-serif;
+  font-weight:700; font-size:15px; letter-spacing:.06em;
+  color:var(--text);
+}
+.nav-logo-txt span { color:var(--blue); }
+
+.nav-links { display:flex; gap:36px; list-style:none; }
+.nav-links a {
+  font-size:13px; font-weight:500; letter-spacing:.05em;
+  color:var(--text2); text-decoration:none;
+  transition: color .2s;
+  position: relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px;
+  background: var(--blue); transition: width .25s;
+}
+.nav-links a:hover { color:var(--text); }
+.nav-links a:hover::after { width:100%; }
+
+.nav-dl {
+  display:flex; align-items:center; gap:8px;
+  background: var(--blue); color:#000;
+  padding: 8px 20px; border-radius:6px;
+  font-size:13px; font-weight:700; letter-spacing:.06em;
+  text-decoration:none;
+  transition: box-shadow .25s, transform .2s;
+  box-shadow: 0 0 20px rgba(61,127,255,0.35);
+}
+.nav-dl:hover { transform:translateY(-1px); box-shadow:0 0 32px rgba(61,127,255,0.55); }
+
+/* ─── HERO ─── */
+.hero {
+  position:relative; min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding: 64px 60px 0;
+  overflow:hidden;
+}
+
+/* animated beam bg */
+.hero-beams {
+  position:absolute; inset:0; pointer-events:none;
+  overflow:hidden;
+}
+.beam {
+  position:absolute;
+  width:1px;
+  background: linear-gradient(180deg, transparent, rgba(61,127,255,0.5), transparent);
+  animation: beamFall linear infinite;
+  opacity:0;
+}
+@keyframes beamFall {
+  0%  { opacity:0; top:-20%; }
+  10% { opacity:1; }
+  90% { opacity:1; }
+  100%{ opacity:0; top:110%; }
+}
+
+/* radial orbs */
+.orb {
+  position:absolute; border-radius:50%;
+  filter: blur(120px); pointer-events:none;
+}
+.orb1 {
+  width:700px; height:500px;
+  top:-200px; left:-100px;
+  background: radial-gradient(circle, rgba(61,127,255,0.08), transparent 60%);
+  animation: orbDrift1 20s ease-in-out infinite;
+}
+.orb2 {
+  width:600px; height:600px;
+  top:100px; right:-200px;
+  background: radial-gradient(circle, rgba(0,200,255,0.06), transparent 60%);
+  animation: orbDrift2 25s ease-in-out infinite;
+}
+.orb3 {
+  width:400px; height:400px;
+  bottom:-100px; left:50%;
+  background: radial-gradient(circle, rgba(245,194,50,0.05), transparent 60%);
+  animation: orbDrift3 18s ease-in-out infinite;
+}
+@keyframes orbDrift1{ 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,40px)} }
+@keyframes orbDrift2{ 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,60px)} }
+@keyframes orbDrift3{ 0%,100%{transform:translate(-50%,0)} 50%{transform:translate(calc(-50% + 30px),30px)} }
+
+/* hero grid lines */
+.hero-grid {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(61,127,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61,127,255,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+}
+
+.hero-inner {
+  position:relative; z-index:2;
+  max-width:1200px; width:100%;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:80px; align-items:center;
+}
+
+/* hero left */
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:500; letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--blue); margin-bottom:28px;
+  opacity:0; animation: fadeSlideUp .6s .2s forwards;
+}
+.hero-eyebrow-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--blue);
+  box-shadow: 0 0 12px var(--blue);
+  animation: pulse2 1.8s infinite;
+}
+@keyframes pulse2{0%,100%{opacity:1;box-shadow:0 0 8px var(--blue)}50%{opacity:.5;box-shadow:0 0 20px var(--blue)}}
+
+.hero-h1 {
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:clamp(36px,4.5vw,62px);
+  line-height:1.0;
+  letter-spacing:-.01em;
+  margin-bottom:24px;
+  opacity:0; animation: fadeSlideUp .6s .35s forwards;
+}
+.hero-h1 .t1 { display:block; color:var(--text); }
+.hero-h1 .t2 {
+  display:block;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero-h1 .t3 {
+  display:block;
+  background: linear-gradient(90deg, var(--gold2), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+
+.hero-sub {
+  font-size:16px; color:var(--text2); line-height:1.75;
+  max-width:480px; margin-bottom:40px;
+  opacity:0; animation: fadeSlideUp .6s .5s forwards;
+}
+
+.hero-specs {
+  display:flex; gap:0; margin-bottom:40px;
+  opacity:0; animation: fadeSlideUp .6s .6s forwards;
+}
+.spec-item {
+  display:flex; flex-direction:column;
+  padding: 16px 24px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  position:relative;
+}
+.spec-item:first-child { border-radius:10px 0 0 10px; }
+.spec-item:last-child  { border-radius:0 10px 10px 0; }
+.spec-item + .spec-item { border-left:0; }
+.spec-val {
+  font-family:'Orbitron',sans-serif;
+  font-size:22px; font-weight:800; line-height:1;
+}
+.spec-val.blue  { color:var(--blue); text-shadow:0 0 20px rgba(61,127,255,.6); }
+.spec-val.cyan  { color:var(--cyan); text-shadow:0 0 20px rgba(0,200,255,.6); }
+.spec-val.gold  { color:var(--gold); text-shadow:0 0 20px rgba(245,194,50,.6); }
+.spec-val.green { color:var(--green);text-shadow:0 0 20px rgba(0,232,122,.6); }
+.spec-lbl { font-size:10px; color:var(--text3); margin-top:4px; letter-spacing:.08em; text-transform:uppercase; }
+
+.hero-cta-row {
+  display:flex; gap:14px; align-items:center;
+  opacity:0; animation: fadeSlideUp .6s .72s forwards;
+}
+
+.btn-hero-dl {
+  position:relative; overflow:hidden;
+  display:inline-flex; align-items:center; gap:10px;
+  background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%);
+  color: #000;
+  padding: 15px 34px; border-radius:8px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:700; font-size:14px; letter-spacing:.06em;
+  text-decoration:none;
+  box-shadow: 0 0 0 1px rgba(245,194,50,.3), 0 8px 40px rgba(245,194,50,.35);
+  transition: box-shadow .3s, transform .2s;
+}
+.btn-hero-dl::before {
+  content:''; position:absolute;
+  top:-100%; left:-80%; width:60%; height:300%;
+  background: rgba(255,255,255,.3);
+  transform: skewX(-25deg);
+  transition: left .55s;
+}
+.btn-hero-dl:hover { transform:translateY(-2px); box-shadow: 0 0 0 1px rgba(245,194,50,.5), 0 12px 50px rgba(245,194,50,.55); }
+.btn-hero-dl:hover::before { left:160%; }
+
+.btn-hero-ghost {
+  display:inline-flex; align-items:center; gap:9px;
+  color:var(--text2); font-size:14px; font-weight:500;
+  text-decoration:none; border:1px solid var(--border2);
+  padding:15px 24px; border-radius:8px;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.btn-hero-ghost:hover { color:var(--text); border-color:var(--border3); background:rgba(255,255,255,.03); }
+
+/* hero right — terminal mockup */
+.hero-visual {
+  opacity:0; animation: fadeSlideLeft .8s .4s forwards;
+  position:relative;
+}
+@keyframes fadeSlideLeft { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+.terminal {
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(61,127,255,0.06),
+    0 40px 100px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  animation: termFloat 7s ease-in-out infinite;
+}
+@keyframes termFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+.term-bar {
+  display:flex; align-items:center; gap:8px;
+  padding:12px 18px;
+  background: var(--bg2);
+  border-bottom:1px solid var(--border);
+}
+.tdot { width:11px;height:11px;border-radius:50%; }
+.td1{background:#ff5f56}.td2{background:#ffbd2e}.td3{background:#27c93f}
+
+.term-title {
+  margin-left:10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--text3); letter-spacing:.08em;
+}
+
+.term-body { padding:20px 22px; }
+
+.term-row {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 12px; border-radius:7px;
+  margin-bottom:6px;
+  background: var(--surface);
+  border:1px solid var(--border);
+  transition: border-color .2s;
+  animation: rowIn .4s both;
+}
+.term-row:nth-child(1){animation-delay:.6s}
+.term-row:nth-child(2){animation-delay:.72s}
+.term-row:nth-child(3){animation-delay:.84s}
+.term-row:nth-child(4){animation-delay:.96s}
+.term-row:nth-child(5){animation-delay:1.08s}
+.term-row:nth-child(6){animation-delay:1.2s}
+@keyframes rowIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+
+.term-row:hover { border-color:var(--border3); }
+
+.term-check {
+  width:18px;height:18px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 10px rgba(61,127,255,.4);
+}
+
+.term-label { font-size:13px;color:var(--text2); flex:1; }
+
+.term-badge {
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; background:rgba(61,127,255,.12);
+  color:var(--blue); border-radius:4px;
+  padding:2px 8px; letter-spacing:.04em;
+}
+
+.term-bar2 {
+  margin:14px 0 0;
+  padding:10px 14px;
+  background: linear-gradient(90deg, rgba(245,194,50,.08), rgba(245,194,50,.04));
+  border:1px solid rgba(245,194,50,.18);
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.term-prem { font-family:'Orbitron',sans-serif; font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--gold); }
+.term-prem-val { font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold2); }
+
+/* floating chips */
+.chip {
+  position:absolute;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:10px 14px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+}
+.chip-fps { top:-16px;right:-24px; animation:chipFloat1 5s ease-in-out infinite .5s; }
+.chip-temp{ bottom:40px;left:-28px; animation:chipFloat2 6s ease-in-out infinite; }
+@keyframes chipFloat1{0%,100%{transform:translateY(0) rotate(2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes chipFloat2{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(7px) rotate(-2deg)}}
+
+.chip-val {
+  font-family:'Orbitron',sans-serif;
+  font-size:18px;font-weight:800;line-height:1;
+}
+.chip-lbl { font-size:9px;color:var(--text3);letter-spacing:.08em;margin-top:3px; }
+
+/* ─── SHARED SECTION ─── */
+.section {
+  position:relative; z-index:1;
+  padding:110px 60px;
+}
+
+.s-inner { max-width:1200px;margin:0 auto; }
+
+.s-label {
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--blue); margin-bottom:16px;
+}
+.s-label-line {
+  width:32px;height:1px;background:var(--blue);opacity:.6;
+}
+
+.s-title {
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(28px,3.5vw,44px);
+  font-weight:800;line-height:1.05;letter-spacing:-.01em;
+  color:var(--text);margin-bottom:16px;
+}
+
+.s-sub {
+  font-size:16px;color:var(--text2);line-height:1.7;
+  max-width:560px;
+}
+
+/* ─── SECTION: STATS TICKER ─── */
+.ticker-wrap {
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:16px 0;
+  overflow:hidden;
+  position:relative;z-index:1;
+}
+.ticker-track {
+  display:flex;gap:0;
+  width:max-content;
+  animation:tickerScroll 30s linear infinite;
+}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.ticker-item {
+  display:flex;align-items:center;gap:10px;
+  padding:0 40px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;letter-spacing:.06em;
+  color:var(--text3);
+  border-right:1px solid var(--border);
+  white-space:nowrap;
+}
+.ticker-item strong { color:var(--text2); }
+.ticker-item svg  { color:var(--blue);flex-shrink:0; }
+
+/* ─── SECTION: FEATURES ─── */
+.feats-bg { background:var(--bg1); }
+
+.feats-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px; margin-top:60px;
+}
+
+.feat {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:30px 26px;
+  position:relative; overflow:hidden;
+  transition:transform .3s, border-color .3s, box-shadow .3s;
+}
+.feat::before {
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.feat:hover { transform:translateY(-5px); border-color:var(--border3); box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 30px var(--glow-b); }
+.feat:hover::before { opacity:1; }
+
+/* accent corner */
+.feat::after {
+  content:'';position:absolute;
+  top:0;right:0;
+  width:80px;height:80px;
+  background: radial-gradient(circle at top right, rgba(61,127,255,.06), transparent 70%);
+}
+
+.feat-ico {
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+}
+.feat-ico svg { width:22px;height:22px; }
+
+.ico-blue  { background:rgba(61,127,255,.1); color:var(--blue); }
+.ico-cyan  { background:rgba(0,200,255,.1);  color:var(--cyan); }
+.ico-gold  { background:rgba(245,194,50,.1); color:var(--gold); }
+.ico-green { background:rgba(0,232,122,.1);  color:var(--green);}
+.ico-red   { background:rgba(255,61,90,.1);  color:var(--red);  }
+.ico-purp  { background:rgba(91,107,255,.1); color:var(--blue2);}
+
+.feat-title { font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px; }
+.feat-desc  { font-size:14px;color:var(--text2);line-height:1.65; }
+.feat-tag   { display:inline-block;margin-top:16px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px; }
+.ftag-prem { background:rgba(245,194,50,.1);color:var(--gold);border:1px solid rgba(245,194,50,.2); }
+.ftag-free { background:rgba(0,232,122,.1); color:var(--green);border:1px solid rgba(0,232,122,.2); }
+
+/* ─── SECTION: SPEC SHOWCASE ─── */
+.showcase-bg { background:var(--bg); }
+
+.showcase-grid {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:48px; align-items:center;
+  margin-top:64px;
+}
+.showcase-grid.rev { direction:rtl; }
+.showcase-grid.rev > * { direction:ltr; }
+
+.showcase-visual {
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:16px; overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+  transition:transform .4s;
+}
+.showcase-visual:hover { transform:scale(1.015); }
+
+.sv-header {
+  background:var(--bg2);
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sv-title { font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--text); }
+.sv-sub   { font-size:11px;color:var(--text3);margin-top:1px; }
+.sv-body  { padding:18px; }
+
+.sv-row {
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+  background:var(--bg1);
+  border:1px solid var(--border);
+  border-radius:8px; margin-bottom:8px;
+  font-size:13px;color:var(--text2);
+  transition:border-color .2s;
+}
+.sv-row:hover { border-color:var(--border3); }
+.sv-dot { width:7px;height:7px;border-radius:50%;flex-shrink:0; }
+.sv-dot.b { background:var(--blue); box-shadow:0 0 8px var(--blue); }
+.sv-dot.c { background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+.sv-dot.g { background:var(--gold); box-shadow:0 0 8px var(--gold); }
+.sv-dot.gr{ background:var(--green);box-shadow:0 0 8px var(--green);}
+.sv-val {
+  margin-left:auto;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--green);
+}
+.sv-val.gold { color:var(--gold); }
+.sv-val.cyan { color:var(--cyan); }
+.sv-val.blue { color:var(--blue); }
+
+.showcase-content { }
+.showcase-bullets { list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:16px; }
+.sc-bullet {
+  display:flex;gap:14px;
+  padding:18px 20px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  transition:border-color .25s, background .25s;
+}
+.sc-bullet:hover { border-color:var(--border3);background:var(--surface2); }
+.sc-ico { width:36px;height:36px;flex-shrink:0;border-radius:8px;display:flex;align-items:center;justify-content:center; }
+.sc-ico svg { width:16px;height:16px; }
+.sc-txt-t { font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px; }
+.sc-txt-d { font-size:13px;color:var(--text2);line-height:1.55; }
+
+/* ─── SECTION: PLANS ─── */
+.plans-bg { background:var(--bg1); }
+
+.plans-grid {
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin-top:60px;
+}
+
+.plan-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px; padding:34px 28px;
+  position:relative; overflow:hidden;
+  transition:transform .3s, box-shadow .3s, border-color .3s;
+}
+.plan-card:hover { transform:translateY(-6px); }
+.plan-card:not(.plan-featured):hover { box-shadow:0 20px 60px rgba(0,0,0,.5); border-color:var(--border3); }
+
+.plan-featured {
+  border-color:rgba(245,194,50,.35);
+  background: linear-gradient(150deg, rgba(245,194,50,.05) 0%, var(--surface) 50%);
+  box-shadow: 0 0 0 1px rgba(245,194,50,.12), 0 20px 60px rgba(0,0,0,.5), 0 0 50px rgba(245,194,50,.07);
+}
+.plan-featured:hover { box-shadow:0 0 0 1px rgba(245,194,50,.25),0 28px 70px rgba(0,0,0,.55),0 0 60px rgba(245,194,50,.12); }
+
+.plan-crown {
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  color:#000;font-size:10px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 18px;border-radius:100px;
+  white-space:nowrap;
+}
+
+.plan-name {
+  font-family:'Orbitron',sans-serif;
+  font-size:20px;font-weight:800;letter-spacing:.06em;
+  margin-bottom:6px;
+}
+.pn-free  { color:var(--green); }
+.pn-trial { color:var(--blue);  }
+.pn-prem  { color:var(--gold);  }
+
+.plan-price {
+  font-family:'Orbitron',sans-serif;
+  font-size:34px;font-weight:900;color:var(--text);
+  margin:18px 0 4px;
+  display:flex;align-items:baseline;gap:6px;
+}
+.plan-price-per { font-size:14px;color:var(--text3);font-weight:400; }
+.plan-desc { font-size:13px;color:var(--text2);margin-bottom:26px; }
+
+.plan-feats { list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px; }
+.plan-feats li { display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text2); }
+.pf-y { color:var(--green);flex-shrink:0; }
+.pf-n { color:var(--text4);flex-shrink:0; }
+.pf-n + span { color:var(--text3); }
+.pf-s { color:var(--gold);flex-shrink:0; }
+.pf-s + span { color:var(--text); font-weight:500; }
+
+.plan-btn {
+  display:block;text-align:center;padding:12px 20px;border-radius:9px;
+  font-family:'Orbitron',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:.07em;
+  text-decoration:none;transition:all .2s;
+}
+.pb-free  { background:rgba(0,232,122,.08);color:var(--green);border:1px solid rgba(0,232,122,.18); }
+.pb-free:hover  { background:rgba(0,232,122,.15); }
+.pb-trial { background:rgba(61,127,255,.08);color:var(--blue); border:1px solid rgba(61,127,255,.18); }
+.pb-trial:hover { background:rgba(61,127,255,.15); }
+.pb-prem  { background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;box-shadow:0 4px 20px rgba(245,194,50,.25); }
+.pb-prem:hover{ box-shadow:0 6px 30px rgba(245,194,50,.45);transform:translateY(-1px); }
+
+/* ─── SECTION: BRANDS ─── */
+.brands-bg { background:var(--bg); }
+
+.brands-list {
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:44px;
+}
+.brand-chip {
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 18px;
+  font-size:14px;font-weight:500;color:var(--text2);
+  transition:all .2s;
+}
+.brand-chip:hover { border-color:var(--border3);color:var(--text);background:var(--surface2); }
+.brand-dot { width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 8px var(--blue);flex-shrink:0; }
+
+/* ─── DOWNLOAD HERO ─── */
+.dl-section {
+  background:var(--bg1);
+  padding:110px 60px;
+  position:relative; overflow:hidden; z-index:1;
+}
+.dl-glow {
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:400px;
+  background:radial-gradient(ellipse,rgba(245,194,50,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.dl-grid-lines {
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,194,50,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(245,194,50,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 100%);
+}
+.dl-inner {
+  max-width:700px;margin:0 auto;
+  text-align:center;
+  position:relative;z-index:2;
+}
+
+.dl-logo {
+  width:80px;height:80px;
+  margin:0 auto 24px;
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 0 60px rgba(61,127,255,.4),0 0 120px rgba(61,127,255,.15);
+  border:1px solid rgba(61,127,255,.25);
+}
+.dl-logo img { width:100%;height:100%;object-fit:contain; }
+
+.dl-title {
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(28px,4vw,44px);
+  font-weight:900;color:var(--text);
+  margin-bottom:12px;letter-spacing:-.01em;
+}
+.dl-sub { font-size:16px;color:var(--text2);line-height:1.7;margin-bottom:36px; }
+
+.dl-chips {
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:36px;
+}
+.dl-chip {
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:7px;padding:8px 16px;
+  font-size:13px;color:var(--text2);
+}
+.dl-chip svg { width:14px;height:14px;color:var(--blue);flex-shrink:0; }
+
+.btn-dl-main {
+  position:relative;overflow:hidden;
+  display:inline-flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,var(--gold2) 0%,var(--gold) 100%);
+  color:#000;
+  padding:18px 52px;border-radius:10px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:800;font-size:16px;letter-spacing:.06em;
+  text-decoration:none;
+  box-shadow:0 0 0 1px rgba(245,194,50,.35),0 10px 50px rgba(245,194,50,.4);
+  transition:box-shadow .3s,transform .2s;
+}
+.btn-dl-main::before {
+  content:'';position:absolute;
+  top:-100%;left:-80%;width:60%;height:300%;
+  background:rgba(255,255,255,.35);
+  transform:skewX(-25deg);
+  transition:left .6s;
+}
+.btn-dl-main:hover { transform:translateY(-3px);box-shadow:0 0 0 1px rgba(245,194,50,.55),0 16px 60px rgba(245,194,50,.6); }
+.btn-dl-main:hover::before { left:160%; }
+
+.dl-note {
+  margin-top:18px;font-size:12px;color:var(--text3);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.dl-note svg { width:13px;height:13px; }
+
+/* ─── FOOTER ─── */
+footer {
+  background:var(--bg);
+  border-top:1px solid var(--border);
+  padding:36px 60px;
+  position:relative;z-index:1;
+}
+.foot-inner {
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.foot-logo { display:flex;align-items:center;gap:12px;text-decoration:none; }
+.foot-logo img { width:28px;height:28px;object-fit:contain; }
+.foot-logo-txt { font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--text2); }
+.foot-copy { font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace; }
+
+/* ─── ANIMATION HELPERS ─── */
+@keyframes fadeSlideUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.reveal {
+  opacity:0; transform:translateY(32px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible { opacity:1; transform:translateY(0); }
+.rev-d1{transition-delay:.08s}
+.rev-d2{transition-delay:.16s}
+.rev-d3{transition-delay:.24s}
+.rev-d4{transition-delay:.32s}
+.rev-d5{transition-delay:.4s}
+.rev-d6{transition-delay:.48s}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:960px){
+  nav { padding:0 24px; }
+  .nav-links { display:none; }
+  .section { padding:70px 24px; }
+  .hero { padding:64px 24px 60px; }
+  .hero-inner { grid-template-columns:1fr;gap:50px; }
+  .hero-visual { display:none; }
+  .feats-grid { grid-template-columns:1fr; }
+  .plans-grid { grid-template-columns:1fr; }
+  .showcase-grid,.showcase-grid.rev { grid-template-columns:1fr;direction:ltr; }
+  footer,.dl-section { padding:50px 24px; }
+  .foot-inner { flex-direction:column;gap:16px;text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- CONFIG: change download URL in one place -->
+<script>
+  const DOWNLOAD_URL = "https://www.mediafire.com/file/cflio1e6n5wdr0p/Kx.rar/file";
+  // inject into all download buttons after DOM ready
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-dl]').forEach(el => {
+      el.href = DOWNLOAD_URL;
+    });
+  });
+</script>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#">
+    <img src="logo.png" alt="Kx Logo">
+    <span class="nav-logo-txt">Software</spa>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Funciones</a></li>
+    <li><a href="#performance">Rendimiento</a></li>
+    <li><a href="#plans">Planes</a></li>
+    <li><a href="#download">Descargar</a></li>
+  </ul>
+  <a class="nav-dl" href="#" data-dl>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Descargar
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-beams" id="beams"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-inner">
+    <!-- LEFT -->
+    <div>
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot"></div>
+        Kx Software Controller v1.0.0 — Disponible ahora
+      </div>
+      <h1 class="hero-h1">
+        <span class="t1">Control total</span>
+        <span class="t2">Ultra Gaming</span>
+        <span class="t3">para Android</span>
+      </h1>
+      <p class="hero-sub">El controlador más avanzado para optimizar dispositivos Android como mobilador. Más FPS, menos lag, temperatura bajo control — todo desde tu PC.</p>
+
+      <div class="hero-specs">
+        <div class="spec-item">
+          <div class="spec-val blue">144</div>
+          <div class="spec-lbl">Hz Pantalla</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-val cyan">4K</div>
+          <div class="spec-lbl">Calidad máx</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-val gold">120</div>
+          <div class="spec-lbl">FPS Free Fire</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-val green">-15°</div>
+          <div class="spec-lbl">Temp. CPU</div>
+        </div>
+      </div>
+
+      <div class="hero-cta-row">
+        <a class="btn-hero-dl" href="#" data-dl>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar .exe
+        </a>
+        <a class="btn-hero-ghost" href="#features">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+          Ver funciones
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT: TERMINAL MOCKUP -->
+    <div class="hero-visual">
+      <div style="position:relative">
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="tdot td1"></div>
+            <div class="tdot td2"></div>
+            <div class="tdot td3"></div>
+            <span class="term-title">Rendimiento Ultra Gaming — Samsung / Free Fire MAX</span>
+          </div>
+          <div class="term-body">
+            <div class="term-row">
+              <div class="term-check">
+                <svg width="9" height="9" viewBox="0 0 16 16" fill="#fff"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"/></svg>
+              </div>
+              <span class="term-label">CPU + Scheduler</span>
+              <span class="term-badge">+8 cmds</span>
+            </div>
+            <div class="term-row">
+              <div class="term-check">
+                <svg width="9" height="9" viewBox="0 0 16 16" fill="#fff"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"/></svg>
+              </div>
+              <span class="term-label">GPU Máxima Potencia</span>
+              <span class="term-badge">+12 cmds</span>
+            </div>
+            <div class="term-row">
+              <div class="term-check">
+                <svg width="9" height="9" viewBox="0 0 16 16" fill="#fff"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"/></svg>
+              </div>
+              <span class="term-label">Desbloqueo Térmico</span>
+              <span class="term-badge">+6 cmds</span>
+            </div>
+            <div class="term-row">
+              <div class="term-check">
+                <svg width="9" height="9" viewBox="0 0 16 16" fill="#fff"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"/></svg>
+              </div>
+              <span class="term-label">RAM Optimizada</span>
+              <span class="term-badge">+13 cmds</span>
+            </div>
+            <div class="term-row">
+              <div class="term-check">
+                <svg width="9" height="9" viewBox="0 0 16 16" fill="#fff"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"/></svg>
+              </div>
+              <span class="term-label">Red + TCP/IP Optimizado</span>
+              <span class="term-badge">+12 cmds</span>
+            </div>
+            <div class="term-row">
+              <div class="term-check">
+                <svg width="9" height="9" viewBox="0 0 16 16" fill="#fff"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"/></svg>
+              </div>
+              <span class="term-label">Bloatware Eliminado</span>
+              <span class="term-badge">+14 cmds</span>
+            </div>
+            <div class="term-bar2">
+              <span class="term-prem">PREMIUM ACTIVO</span>
+              <span class="term-prem-val">1844d restantes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHIPS -->
+        <div class="chip chip-fps">
+          <div class="chip-val" style="color:var(--green)">120 FPS</div>
+          <div class="chip-lbl">FREE FIRE MAX</div>
+        </div>
+        <div class="chip chip-temp">
+          <div class="chip-val" style="color:var(--gold)">38°C</div>
+          <div class="chip-lbl">CPU TEMP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<!-- FEATURES -->
+<section class="section feats-bg" id="features">
+  <div class="s-inner">
+    <div class="s-label reveal"><div class="s-label-line"></div> Funcionalidades</div>
+    <h2 class="s-title reveal rev-d1">Todo lo que necesitas<br>para dominar</h2>
+    <p class="s-sub reveal rev-d2">Kx Software reúne todas las herramientas de optimización, transmisión y control en una interfaz limpia, directa y sin límites.</p>
+
+    <div class="feats-grid">
+      <div class="feat reveal rev-d1">
+        <div class="feat-ico ico-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="feat-title">Rendimiento Ultra Gaming</div>
+        <div class="feat-desc">13 módulos de optimización: CPU scheduler, GPU boost, desbloqueo térmico, RAM, red TCP/IP, Doze desactivado y más. Selecciona marca, juego y nivel.</div>
+        <span class="feat-tag ftag-prem">Premium</span>
+      </div>
+      <div class="feat reveal rev-d2">
+        <div class="feat-ico ico-cyan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="feat-title">Video 4K / 60 FPS</div>
+        <div class="feat-desc">Transmisión vía scrcpy con 60 FPS reales, bitrate 48 Mbps, codec h264, buffer 0ms para lag mínimo. Modo monitor completo que llena tu pantalla.</div>
+        <span class="feat-tag ftag-prem">Premium</span>
+      </div>
+      <div class="feat reveal rev-d3">
+        <div class="feat-ico ico-gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="feat-title">Pantalla 144Hz + 4K DPI</div>
+        <div class="feat-desc">Configura frecuencia de refresco hasta 144Hz, resolución competitiva estirada real, brillo y escala DPI precisa desde la PC. Sin romper orientación.</div>
+        <span class="feat-tag ftag-prem">Premium</span>
+      </div>
+      <div class="feat reveal rev-d4">
+        <div class="feat-ico ico-green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+        </div>
+        <div class="feat-title">Conexión USB + WiFi</div>
+        <div class="feat-desc">Conecta por USB y cambia automáticamente a WiFi sin enredos. Detección mDNS en red local para autocompletar IP y puerto.</div>
+        <span class="feat-tag ftag-free">Gratis</span>
+      </div>
+      <div class="feat reveal rev-d5">
+        <div class="feat-ico ico-red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+        </div>
+        <div class="feat-title">Mapeadores GG / K2er / Panda</div>
+        <div class="feat-desc">Compatibilidad total con los mapeadores más populares desde el PC. Apaga la pantalla del teléfono para ahorrar batería mientras juegas.</div>
+        <span class="feat-tag ftag-prem">Premium</span>
+      </div>
+      <div class="feat reveal rev-d6">
+        <div class="feat-ico ico-purp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="feat-title">Consejos Pro por Marca</div>
+        <div class="feat-desc">Guías específicas para Samsung, Xiaomi, Realme, Infinix y 8 marcas más: DNS Cloudflare, animaciones 0.5x, Play Services off — +20% perf.</div>
+        <span class="feat-tag ftag-prem">Premium</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERFORMANCE SHOWCASE -->
+<section class="section showcase-bg" id="performance">
+  <div class="s-inner">
+    <div class="s-label reveal"><div class="s-label-line"></div> Rendimiento</div>
+    <h2 class="s-title reveal rev-d1">Números que importan</h2>
+
+    <div class="showcase-grid">
+      <div class="showcase-visual reveal rev-d2">
+        <div class="sv-header">
+          <div>
+            <div class="sv-title">Análisis de Rendimiento</div>
+            <div class="sv-sub">Samsung Galaxy — Free Fire MAX — Nivel Máximo</div>
+          </div>
+        </div>
+        <div class="sv-body">
+          <div class="sv-row"><div class="sv-dot b"></div> CPU Freq. Boost<span class="sv-val blue">+8 cmds</span></div>
+          <div class="sv-row"><div class="sv-dot b"></div> GPU Max Power<span class="sv-val blue">+12 cmds</span></div>
+          <div class="sv-row"><div class="sv-dot c"></div> Desbloqueo Térmico<span class="sv-val cyan">-15°C</span></div>
+          <div class="sv-row"><div class="sv-dot c"></div> RAM Optimizada<span class="sv-val cyan">+13 cmds</span></div>
+          <div class="sv-row"><div class="sv-dot g"></div> Red + TCP/IP<span class="sv-val gold">-30ms ping</span></div>
+          <div class="sv-row"><div class="sv-dot g"></div> Pantalla 144Hz<span class="sv-val gold">+8 cmds</span></div>
+          <div class="sv-row"><div class="sv-dot gr"></div> Bloatware Eliminado<span class="sv-val">+14 cmds</span></div>
+          <div class="sv-row"><div class="sv-dot gr"></div> Optimización del Juego<span class="sv-val">+7 cmds</span></div>
+        </div>
+      </div>
+
+      <div class="showcase-content reveal rev-d3">
+        <ul class="showcase-bullets">
+          <li class="sc-bullet">
+            <div class="sc-ico ico-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <div>
+              <div class="sc-txt-t">120 FPS estables en Free Fire</div>
+              <div class="sc-txt-d">Scheduler de CPU y GPU configurado específicamente para Free Fire MAX. Sin drops, sin stutters.</div>
+            </div>
+          </li>
+          <li class="sc-bullet">
+            <div class="sc-ico ico-gold" style="background:rgba(0,200,255,.1);color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <div>
+              <div class="sc-txt-t">144Hz + Resolución 4K real</div>
+              <div class="sc-txt-d">Frecuencia de refresco máxima y resolución estirada real sin romper la orientación del sistema.</div>
+            </div>
+          </li>
+          <li class="sc-bullet">
+            <div class="sc-ico" style="background:rgba(245,194,50,.1);color:var(--gold)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+            <div>
+              <div class="sc-txt-t">-15°C temperatura CPU</div>
+              <div class="sc-txt-d">Desbloqueo térmico y eliminación de procesos en segundo plano que generan calor innecesario.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- segundo bloque reverse -->
+    <div class="showcase-grid rev" style="margin-top:48px">
+      <div class="showcase-visual reveal rev-d2">
+        <div class="sv-header">
+          <div>
+            <div class="sv-title">Video y Audio HD</div>
+            <div class="sv-sub">Configuración scrcpy avanzada</div>
+          </div>
+        </div>
+        <div class="sv-body">
+          <div class="sv-row"><div class="sv-dot b"></div> FPS Transmisión<span class="sv-val blue">60 FPS</span></div>
+          <div class="sv-row"><div class="sv-dot b"></div> Bitrate Video<span class="sv-val blue">48 Mbps</span></div>
+          <div class="sv-row"><div class="sv-dot c"></div> Codec<span class="sv-val cyan">h264</span></div>
+          <div class="sv-row"><div class="sv-dot c"></div> Buffer<span class="sv-val cyan">0ms</span></div>
+          <div class="sv-row"><div class="sv-dot g"></div> Tamaño Máx<span class="sv-val gold">3840px</span></div>
+          <div class="sv-row"><div class="sv-dot g"></div> Codec Audio<span class="sv-val gold">opus</span></div>
+          <div class="sv-row"><div class="sv-dot gr"></div> Bitrate Audio<span class="sv-val">320 kbps</span></div>
+        </div>
+      </div>
+
+      <div class="showcase-content reveal rev-d3">
+        <ul class="showcase-bullets">
+          <li class="sc-bullet">
+            <div class="sc-ico ico-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+            <div>
+              <div class="sc-txt-t">Transmisión 60 FPS sin lag</div>
+              <div class="sc-txt-d">Buffer 0ms y bitrate 48 Mbps. La imagen en tu monitor se ve igual que en el teléfono, sin retraso.</div>
+            </div>
+          </li>
+          <li class="sc-bullet">
+            <div class="sc-ico ico-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+            <div>
+              <div class="sc-txt-t">Audio opus 320 kbps</div>
+              <div class="sc-txt-d">Codec opus de alta eficiencia con bitrate 320kbps. Compatibilidad con Audio Doble en Android 13+.</div>
+            </div>
+          </li>
+          <li class="sc-bullet">
+            <div class="sc-ico ico-purp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <div>
+              <div class="sc-txt-t">Modo Monitor Completo</div>
+              <div class="sc-txt-d">Ajusta la resolución interna del teléfono para llenar tu monitor de 27" o cualquier tamaño.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BRANDS -->
+<section class="section brands-bg">
+  <div class="s-inner">
+    <div class="s-label reveal"><div class="s-label-line"></div> Compatibilidad</div>
+    <h2 class="s-title reveal rev-d1">Soporta todas las marcas</h2>
+    <p class="s-sub reveal rev-d2">Optimizaciones y guías específicas para cada fabricante. Sin configuraciones genéricas.</p>
+    <div class="brands-list reveal rev-d3">
+      <div class="brand-chip"><div class="brand-dot"></div>Samsung</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Xiaomi</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Infinix</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Motorola</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Realme</div>
+      <div class="brand-chip"><div class="brand-dot"></div>OnePlus</div>
+      <div class="brand-chip"><div class="brand-dot"></div>OPPO</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Vivo</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Huawei</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Sony</div>
+      <div class="brand-chip"><div class="brand-dot"></div>Google Pixel</div>
+      <div class="brand-chip"><div class="brand-dot" style="background:var(--text3);box-shadow:none"></div>+ todas las marcas</div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section class="section plans-bg" id="plans">
+  <div class="s-inner">
+    <div class="s-label reveal"><div class="s-label-line"></div> Planes</div>
+    <h2 class="s-title reveal rev-d1">Elige tu nivel</h2>
+    <p class="s-sub reveal rev-d2">Desde acceso gratuito hasta control total sin límites. Un precio, todas las funciones Pro.</p>
+
+    <div class="plans-grid">
+      <!-- FREE -->
+      <div class="plan-card reveal rev-d1">
+        <div class="plan-name pn-free">FREE</div>
+        <div class="plan-price">$0<span class="plan-price-per">/siempre</span></div>
+        <div class="plan-desc">Para explorar y comenzar</div>
+        <ul class="plan-feats">
+          <li>
+            <svg class="pf-y" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Vista de configuraciones</span>
+          </li>
+          <li>
+            <svg class="pf-y" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Perfiles guardados</span>
+          </li>
+          <li>
+            <svg class="pf-n" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span>Optimización de rendimiento</span>
+          </li>
+          <li>
+            <svg class="pf-n" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span>Análisis de FPS</span>
+          </li>
+          <li>
+            <svg class="pf-n" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span>Pantalla estirada / 144Hz</span>
+          </li>
+        </ul>
+        <a href="#" class="plan-btn pb-free" data-dl>Descargar gratis</a>
+      </div>
+      <!-- TRIAL -->
+      <div class="plan-card reveal rev-d2">
+        <div class="plan-name pn-trial">TRIAL</div>
+        <div class="plan-price">$0<span class="plan-price-per">/temporal</span></div>
+        <div class="plan-desc">Acceso completo por tiempo limitado</div>
+        <ul class="plan-feats">
+          <li>
+            <svg class="pf-y" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Optimización de rendimiento</span>
+          </li>
+          <li>
+            <svg class="pf-y" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Pantalla estirada y calidad</span>
+          </li>
+          <li>
+            <svg class="pf-y" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Análisis de FPS en tiempo real</span>
+          </li>
+          <li>
+            <svg class="pf-y" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Calidad balanceada</span>
+          </li>
+          <li>
+            <svg class="pf-y" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Acceso completo temporal</span>
+          </li>
+        </ul>
+        <a href="#" class="plan-btn pb-trial" data-dl>Comenzar Trial</a>
+      </div>
+      <!-- PREMIUM -->
+      <div class="plan-card plan-featured reveal rev-d3">
+        <div class="plan-crown">Mas popular</div>
+        <div class="plan-name pn-prem">PREMIUM</div>
+        <div class="plan-price">$3.99<span class="plan-price-per">/mes</span></div>
+        <div class="plan-desc">Todo el poder, sin restricciones</div>
+        <ul class="plan-feats">
+          <li>
+            <svg class="pf-s" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>Todo Trial incluido</span>
+          </li>
+          <li>
+            <svg class="pf-s" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>Prioridad de soporte</span>
+          </li>
+          <li>
+            <svg class="pf-s" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>Funciones Pro completas</span>
+          </li>
+          <li>
+            <svg class="pf-s" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>Calidad maxima 4K</span>
+          </li>
+          <li>
+            <svg class="pf-s" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>Acceso sin limites</span>
+          </li>
+        </ul>
+        <a href="#" class="plan-btn pb-prem" data-dl>Obtener Premium — $3.99/mes</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="dl-section" id="download">
+  <div class="dl-glow"></div>
+  <div class="dl-grid-lines"></div>
+  <div class="dl-inner">
+    <div class="dl-logo reveal">
+      <img src="logo.png" alt="Kx Software">
+    </div>
+    <div class="dl-title reveal rev-d1">Empieza ahora mismo</div>
+    <p class="dl-sub reveal rev-d2">Descarga Kx Software Controller v1.0.0 y lleva tu setup de mobilador al siguiente nivel. Compatible con todos los dispositivos Android.</p>
+
+    <div class="dl-chips reveal rev-d3">
+      <div class="dl-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Windows 10 / 11
+      </div>
+      <div class="dl-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Android 8+
+      </div>
+      <div class="dl-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Gratis para empezar
+      </div>
+      <div class="dl-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Setup en 2 minutos
+      </div>
+    </div>
+
+    <a class="btn-dl-main reveal rev-d4" href="#" data-dl>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Descargar Kx Software
+    </a>
+    <div class="dl-note reveal rev-d5">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Archivo .exe descargado desde Mediafire — kx-app.com
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <a class="foot-logo" href="#">
+      <img src="logo.png" alt="Kx">
+      <span class="foot-logo-txt">Kx Software</span>
+    </a>
+    <div class="foot-copy">© 2025 Kx Software Controller v1.0.0</div>
+  </div>
+</footer>
+
+<script>
+/* ─── CURSOR ─── */
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cur.style.width='18px'; cur.style.height='18px';
+    cur.style.background='var(--gold)';
+    ring.style.width='54px'; ring.style.height='54px';
+    ring.style.borderColor='rgba(245,194,50,.5)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cur.style.width='10px'; cur.style.height='10px';
+    cur.style.background='var(--blue)';
+    ring.style.width='36px'; ring.style.height='36px';
+    ring.style.borderColor='rgba(61,127,255,.5)';
+  });
+});
+
+/* ─── NAV SCROLL ─── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+/* ─── BEAMS ─── */
+const beamWrap = document.getElementById('beams');
+for(let i=0;i<14;i++){
+  const b = document.createElement('div');
+  b.className = 'beam';
+  const left = Math.random()*100;
+  const height = 80 + Math.random()*200;
+  const dur = 4 + Math.random()*8;
+  const delay = Math.random()*10;
+  b.style.cssText = `left:${left}%;height:${height}px;animation-duration:${dur}s;animation-delay:${delay}s;opacity:0;`;
+  beamWrap.appendChild(b);
+}
+
+/* ─── TICKER ─── */
+const tickData = [
+  {icon:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', label:'FPS Máx', val:'120 FPS'},
+  {icon:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>', label:'Resolución', val:'4K'},
+  {icon:'<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>', label:'Pantalla', val:'144 Hz'},
+  {icon:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>', label:'Temperatura', val:'-15°C CPU'},
+  {icon:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>', label:'Bitrate', val:'48 Mbps'},
+  {icon:'<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>', label:'Transmisión', val:'60 FPS'},
+  {icon:'<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>', label:'Rendimiento', val:'+20%'},
+  {icon:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>', label:'Audio', val:'opus 320k'},
+  {icon:'<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>', label:'Ping DNS', val:'-30ms'},
+];
+const track = document.getElementById('ticker');
+[...tickData,...tickData].forEach(({icon,label,val})=>{
+  const div = document.createElement('div');
+  div.className='ticker-item';
+  div.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icon}</svg><strong>${label}</strong>${val}`;
+  track.appendChild(div);
+});
+
+/* ─── REVEAL ON SCROLL ─── */
+const revObs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+/* ─── INJECT DOWNLOAD URL ─── */
+// already handled by inline script at top
+</script>
+</body>
+</html>
