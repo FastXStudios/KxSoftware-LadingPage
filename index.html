@@ -1074,8 +1074,47 @@ footer{
 </footer>
 
 <script>
-const DOWNLOAD_URL = "https://www.mediafire.com/file/cflio1e6n5wdr0p/Kx.rar/file";
-document.querySelectorAll('[data-dl]').forEach(el => el.href = DOWNLOAD_URL);
+/* ── version dinámica desde GitHub ── */
+const VERSION_JSON = "https://raw.githubusercontent.com/FastXStudios/KxResource/main/build/version.json";
+const FALLBACK_URL = "https://github.com/FastXStudios/KxBuilds/releases/latest/download/KxSetup.exe";
+
+async function loadVersion() {
+  try {
+    const res = await fetch(VERSION_JSON);
+    const data = await res.json();
+
+    const version = data.version || "1.0.0";
+    const downloadUrl = data.downloadUrl || FALLBACK_URL;
+
+    // actualizar todos los botones de descarga
+    document.querySelectorAll('[data-dl]').forEach(el => el.href = downloadUrl);
+
+    // actualizar número de versión en hero eyebrow
+    const eyebrow = document.querySelector('.hero-eyebrow');
+    if (eyebrow) {
+      eyebrow.innerHTML = `<span class="eyebrow-pill">Nuevo</span> Kx Software Controller v${version} — Disponible ahora`;
+    }
+
+    // actualizar versión en footer
+    const copy = document.querySelector('.foot-copy');
+    if (copy) copy.textContent = `2025 Kx Software Controller v${version}`;
+
+    // actualizar nota de descarga segura
+    const dlNote = document.querySelector('.dl-note');
+    if (dlNote) {
+      dlNote.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Archivo .exe · v${version} · Descarga segura desde GitHub
+      `;
+    }
+
+  } catch (e) {
+    // si falla el fetch, usa fallback silencioso
+    document.querySelectorAll('[data-dl]').forEach(el => el.href = FALLBACK_URL);
+  }
+}
+
+loadVersion();
 
 /* ticker */
 const tData=[
