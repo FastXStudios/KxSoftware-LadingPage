@@ -20,7 +20,7 @@
   --ink:  #1d1d1f;
   --ink2: #6e6e73;
   --ink3: #aeaeb2;
-  --acc:  #bf5fff;   /* morado fosforescente */
+  --acc:  #bf5fff;
   --acc2: #9b2dff;
   --acc-dim: rgba(191,95,255,0.18);
   --acc-glow: rgba(191,95,255,0.35);
@@ -51,10 +51,16 @@ nav {
 .nav-logo{display:flex;align-items:center;gap:10px}
 .nav-logo-ico{
   width:28px;height:28px;border-radius:7px;
-  background:var(--acc);
+  background:transparent;
   display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
 }
-.nav-logo-ico svg{width:14px;height:14px;color:#fff}
+.nav-logo-ico img{
+  width:28px;height:28px;
+  border-radius:7px;
+  object-fit:cover;
+  display:block;
+}
 .nav-logo-name{font-size:15px;font-weight:700;letter-spacing:-.3px;color:#fff}
 .nav-logo-name span{color:var(--acc)}
 .nav-links{
@@ -87,22 +93,17 @@ nav {
   padding:54px 44px 0;
   overflow:hidden;
 }
-
-/* subtle noise */
 .hero::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   opacity:.03;
 }
-
-/* purple top glow */
 .hero-glow{
   position:absolute;top:-60px;left:50%;transform:translateX(-50%);
   width:1000px;height:500px;
   background:radial-gradient(ellipse at 50% 0%, rgba(191,95,255,.2) 0%, transparent 62%);
   pointer-events:none;z-index:0;
 }
-/* secondary warm glow bottom right */
 .hero-glow2{
   position:absolute;bottom:-100px;right:-150px;
   width:500px;height:500px;
@@ -187,7 +188,7 @@ nav {
 }
 .btn-ghost-hero:hover{border-color:rgba(255,255,255,.4);color:#fff}
 
-/* ── hero device: browser mockup wrapping screenshot ── */
+/* ── hero device ── */
 .hero-device{
   position:relative;z-index:2;
   width:100%;max-width:1060px;
@@ -247,7 +248,6 @@ nav {
 .chip-temp .chip-val{color:var(--gold)}
 @keyframes chipFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
-/* hero fade */
 .hero-bottom-fade{
   position:absolute;bottom:0;left:0;right:0;height:120px;
   background:linear-gradient(transparent,var(--dark));
@@ -293,8 +293,6 @@ nav {
 /* ══ WHY ══ */
 .why-section{background:var(--off)}
 .why-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
-
-/* app mockup card */
 .app-card{
   background:#fff;
   border-radius:20px;
@@ -357,8 +355,6 @@ nav {
 }
 .ac-s-label::before{content:'';display:block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
 .ac-s-val{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink3)}
-
-/* why bullets */
 .why-points{margin-top:36px;display:flex;flex-direction:column;gap:12px}
 .wp{
   display:flex;gap:16px;align-items:flex-start;
@@ -413,7 +409,7 @@ nav {
 .feat-title{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.3px}
 .feat-desc{font-size:13px;color:var(--ink2);line-height:1.65}
 
-/* ══ SHOWCASE (real device photo as wide banner) ══ */
+/* ══ SHOWCASE ══ */
 .showcase-section{
   background:var(--dark);
   padding:100px 44px 0;
@@ -423,16 +419,12 @@ nav {
 .showcase-label-row .s-label{color:rgba(191,95,255,.8)}
 .showcase-label-row .s-title{color:#fff;margin-bottom:10px}
 .showcase-label-row .s-sub{color:rgba(255,255,255,.45);margin:0 auto 60px}
-
-/* purple top glow for showcase */
 .showcase-glow{
   position:absolute;top:-100px;left:50%;transform:translateX(-50%);
   width:800px;height:400px;
   background:radial-gradient(ellipse at 50% 0%,rgba(191,95,255,.15) 0%,transparent 65%);
   pointer-events:none;z-index:0;
 }
-
-/* device frame — horizontal */
 .device-stage{
   position:relative;z-index:2;
   max-width:1100px;margin:0 auto;
@@ -459,8 +451,6 @@ nav {
   width:100%;display:block;
   object-fit:cover;object-position:top;
 }
-
-/* specs strip */
 .showcase-specs{
   background:rgba(255,255,255,.03);
   border-top:1px solid rgba(255,255,255,.07);
@@ -584,12 +574,18 @@ nav {
 }
 .dl-icon{
   width:72px;height:72px;
-  background:var(--acc);border-radius:20px;
+  background:transparent;border-radius:20px;
   margin:0 auto 28px;
   display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
   box-shadow:0 0 60px rgba(191,95,255,.5),0 20px 60px rgba(0,0,0,.4);
 }
-.dl-icon svg{width:34px;height:34px;color:#fff}
+.dl-icon img{
+  width:72px;height:72px;
+  border-radius:20px;
+  object-fit:cover;
+  display:block;
+}
 .dl-title{
   font-size:clamp(38px,5.5vw,64px);font-weight:800;
   letter-spacing:-2.5px;color:#fff;margin-bottom:14px;
@@ -629,8 +625,18 @@ footer{
   display:flex;align-items:center;justify-content:space-between;
 }
 .foot-logo{display:flex;align-items:center;gap:10px}
-.foot-logo-ico{width:26px;height:26px;border-radius:7px;background:var(--acc);display:flex;align-items:center;justify-content:center}
-.foot-logo-ico svg{width:13px;height:13px;color:#fff}
+.foot-logo-ico{
+  width:26px;height:26px;border-radius:7px;
+  background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.foot-logo-ico img{
+  width:26px;height:26px;
+  border-radius:7px;
+  object-fit:cover;
+  display:block;
+}
 .foot-logo-name{font-size:14px;font-weight:600;color:rgba(255,255,255,.35)}
 .foot-links{display:flex;gap:24px}
 .foot-links a{font-size:12px;color:rgba(255,255,255,.25);transition:color .2s}
@@ -667,9 +673,9 @@ footer{
 <nav>
   <a class="nav-logo" href="#">
     <div class="nav-logo-ico">
-        <img class="browser-img" src="logo.png" alt="Kx Software">
+      <img src="logo.png" alt="Kx Software">
     </div>
-    <span class="nav-logo-name"> <span>Software</span></span>
+    <span class="nav-logo-name">Kx <span>Software</span></span>
   </a>
   <ul class="nav-links">
     <li><a href="#features">Funciones</a></li>
@@ -714,7 +720,6 @@ footer{
     </a>
   </div>
 
-  <!-- Browser frame with app screenshot -->
   <div class="hero-device">
     <div style="position:relative">
       <div class="browser-frame">
@@ -758,14 +763,14 @@ footer{
         </div>
         <div class="ac-body">
           <div class="ac-row">
-            <div class="ac-ico ai-purple">
+            <div class="ac-ico ai-blue">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             </div>
             <span class="ac-lbl">CPU + Scheduler Gaming</span>
             <span class="ac-badge">+8 cmds</span>
           </div>
           <div class="ac-row">
-            <div class="ac-ico ai-purple">
+            <div class="ac-ico ai-blue">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
             </div>
             <span class="ac-lbl">GPU Maxima Potencia</span>
@@ -912,7 +917,7 @@ footer{
   </div>
 </section>
 
-<!-- SHOWCASE — real wide device photo -->
+<!-- SHOWCASE -->
 <section class="showcase-section" id="performance">
   <div class="showcase-glow"></div>
   <div class="showcase-label-row">
@@ -1026,10 +1031,10 @@ footer{
   <div class="dl-dots"></div>
   <div class="dl-inner">
     <div class="dl-icon reveal">
-        <img class="browser-img" src="logo.png" alt="Kx Software">
+      <img src="logo.png" alt="Kx Software">
     </div>
     <div class="dl-title reveal d1">Empieza hoy.</div>
-    <p class="dl-sub reveal d2">Descarga Kx Software v1.0.0 y lleva tu setup de mobilador al siguiente nivel. Compatible con todos los dispositivos Android.</p>
+    <p class="dl-sub reveal d2" id="dl-sub-text">Descarga Kx Software y lleva tu setup de mobilador al siguiente nivel. Compatible con todos los dispositivos Android.</p>
     <div class="dl-chips reveal d3">
       <div class="dl-chip">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
@@ -1050,7 +1055,7 @@ footer{
     </a>
     <div class="dl-note reveal d5">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      Archivo .exe — Descarga segura desde Mediafire
+      Archivo .exe — Descarga segura desde GitHub
     </div>
   </div>
 </section>
@@ -1060,7 +1065,7 @@ footer{
   <div class="foot-inner">
     <div class="foot-logo">
       <div class="foot-logo-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <img src="logo.png" alt="Kx Software">
       </div>
       <span class="foot-logo-name">Kx Software</span>
     </div>
@@ -1069,7 +1074,7 @@ footer{
       <a href="#plans">Planes</a>
       <a href="#download">Descargar</a>
     </div>
-    <div class="foot-copy">2025 Kx Software Controller v1.0.0</div>
+    <div class="foot-copy" id="foot-copy">2026 Kx Software Controller v1.0.0</div>
   </div>
 </footer>
 
@@ -1086,20 +1091,26 @@ async function loadVersion() {
     const version = data.version || "1.0.0";
     const downloadUrl = data.downloadUrl || FALLBACK_URL;
 
-    // actualizar todos los botones de descarga
+    // botones de descarga
     document.querySelectorAll('[data-dl]').forEach(el => el.href = downloadUrl);
 
-    // actualizar número de versión en hero eyebrow
+    // eyebrow del hero
     const eyebrow = document.querySelector('.hero-eyebrow');
     if (eyebrow) {
       eyebrow.innerHTML = `<span class="eyebrow-pill">Nuevo</span> Kx Software Controller v${version} — Disponible ahora`;
     }
 
-    // actualizar versión en footer
-    const copy = document.querySelector('.foot-copy');
-    if (copy) copy.textContent = `2025 Kx Software Controller v${version}`;
+    // párrafo de descarga con versión
+    const dlSub = document.getElementById('dl-sub-text');
+    if (dlSub) {
+      dlSub.innerHTML = `Descarga Kx Software <strong style="color:#fff">v${version}</strong> y lleva tu setup de mobilador al siguiente nivel. Compatible con todos los dispositivos Android.`;
+    }
 
-    // actualizar nota de descarga segura
+    // footer
+    const copy = document.getElementById('foot-copy');
+    if (copy) copy.textContent = `2026 Kx Software Controller v${version}`;
+
+    // nota de descarga
     const dlNote = document.querySelector('.dl-note');
     if (dlNote) {
       dlNote.innerHTML = `
@@ -1109,7 +1120,6 @@ async function loadVersion() {
     }
 
   } catch (e) {
-    // si falla el fetch, usa fallback silencioso
     document.querySelectorAll('[data-dl]').forEach(el => el.href = FALLBACK_URL);
   }
 }
@@ -1117,25 +1127,26 @@ async function loadVersion() {
 loadVersion();
 
 /* ticker */
-const tData=[
+const tData = [
   {lbl:'FPS Maximo',val:'120 FPS'},{lbl:'Pantalla',val:'144Hz'},
   {lbl:'Temperatura',val:'-15C CPU'},{lbl:'Transmision',val:'60 FPS'},
   {lbl:'Bitrate',val:'48 Mbps'},{lbl:'Ping',val:'-30ms'},
   {lbl:'Resolucion',val:'4K'},{lbl:'Audio',val:'opus 320k'},
   {lbl:'Rendimiento',val:'+20%'},
 ];
-const track=document.getElementById('ticker');
-[...tData,...tData].forEach(({lbl,val})=>{
-  const d=document.createElement('div');d.className='ticker-item';
-  d.innerHTML=`<div class="tick-dot"></div><strong>${lbl}</strong>${val}`;
+const track = document.getElementById('ticker');
+[...tData,...tData].forEach(({lbl,val}) => {
+  const d = document.createElement('div');
+  d.className = 'ticker-item';
+  d.innerHTML = `<div class="tick-dot"></div><strong>${lbl}</strong>${val}`;
   track.appendChild(d);
 });
 
 /* reveal on scroll */
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
-},{threshold:0.1});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, {threshold: 0.1});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
